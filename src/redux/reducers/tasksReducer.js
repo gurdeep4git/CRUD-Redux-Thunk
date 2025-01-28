@@ -57,13 +57,13 @@ const tasksReducer = (state = initState, action) => {
       };
     case SORT_HEADER:
       const tasksCopy = [...state.tasks];
-      const col = action.payload;
+      const col = action.payload.column;
       tasksCopy.sort((a, b) => {
         if (a[col] < b[col]) {
-          return -1;
+            return action.payload.sortType === 0 ? -1 : 1; // Ascending or descending order
         }
         if (a[col] > b[col]) {
-          return 1;
+            return action.payload.sortType === 0 === 'asc' ? 1 : -1; // Ascending or descending order
         }
         return 0;
       });

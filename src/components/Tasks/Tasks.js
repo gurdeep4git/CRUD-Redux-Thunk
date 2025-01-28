@@ -7,20 +7,28 @@ import { Link } from "react-router-dom";
 import { SORT_HEADER } from "../../redux/actions/actionTypes";
 import { transformDate } from "../../utils/transform-date";
 import Popup from "../Popup/Popup";
+import sortDown from "../../assets/sort-alpha-down.svg";
+import sortUp from "../../assets/sort-alpha-up.svg";
 
 export const Tasks = () => {
   const dispatch = useDispatch();
   const { tasks, loading, error } = useSelector((state) => state.tasks);
   const [open, setOpen] = useState(false);
   const [id, setId] = useState(null);
+  const [sortType, setSortType] = useState(0);
 
   useEffect(() => {
     dispatch(fetchTasks());
   }, [dispatch]);
 
   const onHeaderClick = (e) => {
-    const column = e.target.attributes["data-column"].value;
-    dispatch({ type: SORT_HEADER, payload: column });
+    const column = e?.target?.attributes["data-column"]?.value;
+    const payload = {
+      column,
+      sortType,
+    };
+    dispatch({ type: SORT_HEADER, payload });
+    setSortType(Number(!sortType));
   };
 
   const openModalHandler = (id) => {
@@ -42,8 +50,15 @@ export const Tasks = () => {
     <table className="table table-bordered">
       <thead>
         <tr>
-          <th data-column="title" onClick={(e) => onHeaderClick(e)}>
-            Title
+          <th className="d-flex justify-content-between" data-column="title" onClick={(e) => onHeaderClick(e)}>
+            <span>Title</span>
+            <span>
+              {sortType === 0 ? (
+                <img src={sortUp} alt="icon" />
+              ) : (
+                <img src={sortDown} alt="icon" />
+              )}
+            </span>
           </th>
           <th>Assigned To</th>
           <th>Status</th>
@@ -87,7 +102,7 @@ export const Tasks = () => {
                     Edit
                   </button>
                 </Link>
-                <button
+                <button style={{marginLeft:'-3px'}}
                   type="button"
                   onClick={() => openModalHandler(task?.id)}
                   className="btn btn-danger"
